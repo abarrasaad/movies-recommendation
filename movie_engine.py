@@ -69,5 +69,3 @@ def recommend_movies(target_user, num_recommendations = 5):
     for movie_tuple in predictions[:num_recommendations]:
         top_titles.append(movie_nodes[movie_tuple[0]]["title"])
     return top_titles
-
-print(recommend_movies(20))
