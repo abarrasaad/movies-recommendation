@@ -19,7 +19,10 @@ Unlike basic "top-rated" lists, this engine uses a **Collaborative Filtering** a
 ### 3. Key Technical Challenges Solved
 * **Stateless Persistence:** Used `sessionStorage` to allow users to select movies across multiple search results without losing their progress.
 * **API Mapping:** Built a "Rosetta Stone" dictionary to map MovieLens IDs to TMDB IDs for image retrieval.
-* **Performance Optimization:** Implemented logic to handle API latency during batch requests.
+* **Performance Optimization:** Implemented logic to handle API latency during batch requests.*
+
+<img width="1241" height="671" alt="image" src="https://github.com/user-attachments/assets/d4e8fa5e-5685-4192-ab03-078a882d8fe4" />
+
 
 ## 🚀 How to Run Locally
 
@@ -52,6 +55,9 @@ Unlike basic "top-rated" lists, this engine uses a **Collaborative Filtering** a
 *   static/style.css: Custom CSS (Vanilla CSS - No Bootstrap/Tailwind).
     
 *   ml-latest-small/: The dataset containing 100,000 ratings.
+
+  
+
   
     
 
