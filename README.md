@@ -30,7 +30,7 @@ Unlike basic "top-rated" lists, this engine uses a **Collaborative Filtering** a
 
 3.  **Get your TMDB API Key:**
     
-    *   Go to [The Movie Database (TMDB)](https://www.google.com/search?q=https://www.themoviedb.org/settings/api&authuser=1) and create a free account.
+    *   Go to [The Movie Database (TMDB)](https://www.themoviedb.org/) and create a free account.
         
     *   Request an API Key (Settings -> API).
         
