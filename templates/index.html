@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Movie recommender</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <h1>Choose 5 movies you love</h1>
+    <form method="GET" action="/" style="margin-bottom: 20px">
+      <input
+        type="text"
+        name="query"
+        placeholder="Search for a movie..."
+        style="
+          padding: 10px;
+          width: 300px;
+          font-size: 16px;
+          border-radius: 4px;
+          border: 1px solid #ccc;
+        "
+      />
+      <button
+        type="submit"
+        style="padding: 10px 20px; font-size: 16px; cursor: pointer"
+      >
+        Search
+      </button>
+      <a
+        href="/"
+        style="
+          margin-left: 15px;
+          text-decoration: none;
+          color: #dc3545;
+          font-weight: bold;
+        "
+        >Clear Search</a
+      >
+    </form>
+    <div
+      style="
+        margin: 20px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+      "
+    >
+      <span
+        id="selection-counter"
+        style="font-size: 1.2em; font-weight: bold; color: #555"
+      >
+        Selected: 0 / 5
+      </span>
+      <button
+        onclick="sendToPython()"
+        style="
+          padding: 10px 20px;
+          font-size: 16px;
+          cursor: pointer;
+          background-color: #28a745;
+          color: white;
+          border: none;
+          border-radius: 4px;
+        "
+      >
+        Predict My Taste!
+      </button>
+    </div>
+    <div
+      id="results-box"
+      style="
+        display: none;
+        margin-top: 30px;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+      "
+    >
+      <h2>We think you will love:</h2>
+      <ul
+        id="recommendation-list"
+        style="list-style-type: none; padding: 0; font-size: 1.2em"
+      ></ul>
+    </div>
+    <div class="movie-grid">
+      {% for movie in movies %}
+      <div
+        class="movie-card"
+        data-id="{{ movie['movie_id'] }}"
+        onclick="toggleMovie({{ movie['movie_id'] }}, this)"
+      >
+        <img
+          src="{{ movie['poster_url'] }}"
+          alt="poster"
+          style="width: 100%; border-radius: 4px; margin-bottom: 10px"
+        />
+        <h3>{{movie['title']}}</h3>
+        <p>{{movie['genre']}}</p>
+      </div>
+      {% endfor %}
+    </div>
+    <script>
+      let selectedMovies =
+        JSON.parse(sessionStorage.getItem('ghostPicks')) || [];
+
+      window.onload = function () {
+        const cards = document.querySelectorAll('.movie-card');
+        cards.forEach((card) => {
+          const movieId = parseInt(card.getAttribute('data-id'));
+          if (selectedMovies.includes(movieId)) {
+            card.classList.add('selected');
+          }
+        });
+      };
+
+      document.getElementById('selection-counter').innerText =
+        'Selected: ' + selectedMovies.length + ' / 5';
+
+      function toggleMovie(movieId, element) {
+        const index = selectedMovies.indexOf(movieId);
+
+        if (index > -1) {
+          selectedMovies.splice(index, 1);
+          element.classList.remove('selected');
+        } else {
+          if (selectedMovies.length < 5) {
+            selectedMovies.push(movieId);
+            element.classList.add('selected');
+          } else {
+            alert("You've already picked 5 movies! Ready for the backend.");
+          }
+        }
+
+        sessionStorage.setItem('ghostPicks', JSON.stringify(selectedMovies));
+
+        document.getElementById('selection-counter').innerText =
+          'Selected: ' + selectedMovies.length + ' / 5';
+
+        console.log('Current Profile:', selectedMovies);
+      }
+
+      function sendToPython() {
+        if (selectedMovies.length < 5) {
+          alert('Please pick 5 movies first!');
+          return;
+        }
+
+        fetch('/recommend', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ ghost_profile: selectedMovies }),
+        })
+          .then((response) => response.json())
+          .then((serverData) => {
+            const resultsBox = document.getElementById('results-box');
+            const listElement = document.getElementById('recommendation-list');
+
+            listElement.innerHTML = '';
+            listElement.style.display = 'flex';
+            listElement.style.flexWrap = 'wrap';
+            listElement.style.justifyContent = 'center';
+            listElement.style.gap = '20px';
+
+            serverData.recommendations.forEach((movie) => {
+              let li = document.createElement('li');
+              li.style.width = '150px';
+              li.style.textAlign = 'center';
+              li.style.listStyle = 'none';
+
+              let img = document.createElement('img');
+              img.src = movie.poster;
+              img.style.width = '100%';
+              img.style.borderRadius = '8px';
+              img.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+              img.style.marginBottom = '10px';
+
+              let titleSpan = document.createElement('div');
+              titleSpan.style.color = '#28a745';
+              titleSpan.style.fontWeight = 'bold';
+              titleSpan.style.fontSize = '0.9em';
+              titleSpan.innerText = movie.title;
+
+              li.appendChild(img);
+              li.appendChild(titleSpan);
+              listElement.appendChild(li);
+            });
+
+            resultsBox.style.display = 'block';
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            sessionStorage.removeItem('ghostPicks');
+            selectedMovies = [];
+            document.getElementById('selection-counter').innerText =
+              'Selected: 0 / 5';
+
+            document
+              .querySelectorAll('.movie-card')
+              .forEach((card) => card.classList.remove('selected'));
+          });
+      }
+    </script>
+  </body>
+</html>

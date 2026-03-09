@@ -1,0 +1,39 @@
+body {
+  font-family: sans-serif;
+  background-color: #f4f4f9;
+  padding: 20px;
+  text-align: center;
+}
+
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.movie-card {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s;
+  border: 2px solid transparent;
+}
+
+.movie-card:hover {
+  transform: translateY(-5px);
+}
+
+.movie-card p {
+  overflow-wrap: break-word;
+  font-size: 0.9em;
+  color: #666;
+}
+
+
+.movie-card.selected {
+  border-color: #28a745;
+  background-color: #eafaf1;
+}

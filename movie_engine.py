@@ -2,13 +2,24 @@ import csv
 import math
 
 movie_nodes = {}
+tmdb_map = {}
+
+with open('ml-latest-small/links.csv', newline='', encoding='utf-8') as csvfile:
+    tmdb = csv.reader(csvfile, delimiter=',', quotechar='"')
+    next(tmdb)
+    for row in tmdb:
+        if row[2]:
+            movie_id = int(row[0])
+            tmdb_id = int(row[2])
+            tmdb_map[movie_id] = tmdb_id
+
 
 with open('ml-latest-small/movies.csv', newline='', encoding='utf-8') as csvfile:
     movies = csv.reader(csvfile, delimiter=',', quotechar='"')
     next(movies)
     for row in movies:
         movie_id = int(row[0])
-        movie_nodes[movie_id] = {"movie_id": movie_id, "title": row[1], "genre": row[2]}
+        movie_nodes[movie_id] = {"movie_id": movie_id, "title": row[1], "genre": row[2], "tmdb_id": tmdb_map.get(movie_id)}
 
 user_ratings = {}
 
